@@ -1,0 +1,92 @@
+
+program ::= fragment*
+
+fragment ::= "relation" "(" RSYMB props ")"
+           | "entity" "(" ID "," expr ")"
+           | "terminal" "(" RSYMB "," builtin_or_id ")"
+           | inference 
+           | proc
+           | query
+
+inference ::= conditions  ("(" priority ")")? BAR conclusion
+
+conditions ::= "#"
+             | either_prem_sidecon+
+
+either_prem_sidecon ::= premise | sidecon
+
+sidecon ::= expr               // same as below, but with "true" as a pattern
+          | expr "|>" pat
+          | "is-terminal" "(" RSYMB "," expr ")"
+          | "is-non-terminal" "(" RSYMB "," expr ")"
+
+query ::= ">" premise
+
+proc ::= "procedure" "(" (priority ",")? rel ("," ID)? ")" branches
+
+branches ::= branch branches
+           | #
+branch ::= "{" stmt* "}"
+
+stmt ::= stmt_alt ";"?
+
+stmt_alt ::= "branches" branches
+           | "pm" "(" expr "," pat ")"
+           | "is-terminal" "(" RSYMB "," term ")"
+           | "is-non-terminal" "(" RSYMB "," term ")"
+           | "trans" "(" rel "," term "," VAR "," label ")"
+           | "get" "(" ID "," var "," label ")"
+           | "set" "(" ID "," term "," label ")"
+           | "commit" "(" term ")"
+
+premise ::= tctxt tconf rel pconf
+conclusion ::= pctxt pconf rel tconf
+
+tctxt ::= #
+        | tref ("," tref)* "|-"
+pctxt ::= #
+        | pref ("," pref)* "|-"
+
+tref ::= ID "(" expr ")"
+       | ID "=" expr
+pref ::= ID "(" pat ")"
+       | ID "=" pat
+
+tconf ::= "{"? expr ("," tref)* "}"?
+pconf ::= "{"? pat  ("," pref)* "}"?
+
+expr ::= term | opname | opname "(" ")" | opname "(" expr ("," expr)* ")"
+opname ::= "_" ID
+
+term ::= var | ID | ID "(" ")" | ID "(" term ("," term)* ")"
+       | builtin_literal
+
+pat ::= "_" | "?" | var | ID | ID "(" ")" | ID "(" pat ("," pat)* ")"
+      | builtin_literal
+
+builtin_literal :: BOOLEANS | INTEGERS | STRINGS | CHARACTERS
+
+props ::= ("," prop)*
+prop  ::= "CONTEXT-FREE" | "TERMINAL-REFLEXIVE" | "REFLEXIVE" | "REPEATABLE"
+
+builtin_or_id ::= builtin_types | ID
+builtin_types ::= "BOOLEANS" | "STRINGS" | "INTEGERS" | "CHARACTERS"
+                  "LISTS" | "ADTS" | "TUPLES" | "TYPES"
+
+var ::= "_"? ALTID | "__T0"
+
+rel ::= RSYMB | RSYMB "*"
+
+label ::= INTEGERS
+priority ::= INTEGERS
+
+RSYMB ::= {arrow shapes like -->, =>, and =UP=>}
+ID ::= {lower case identifiers for constructor names and value operations}
+ALTID ::= {upper case identifiers for meta-variables} 
+BOOLEANS ::= true | false
+INTEGERS ::= ...
+STRINGS  ::= {double quoted}
+CHARACTERS ::= {single quoted}
+BAR ::= {a string of at least 6 hyphens}
+
+

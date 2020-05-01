@@ -1,0 +1,192 @@
+> {plus(3,4)} => {RES}
+RES |-> ["7"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {plus(2,plus(3,4))} => {9}
+RES |-> ["7"]
+_X0 |-> ["9"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {leq(3,3)} => {_}
+RES |-> ["7"]
+_X0 |-> ["true"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {leq(plus(2,2),3)} => {_}
+RES |-> ["7"]
+_X0 |-> ["false"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {ref("x")} => {_} FAILED
+RES |-> ["7"]
+_X0 |-> ["false"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {seq(assign("x",plus(1,2)),print(ref("x")))} ->* {done()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+env |-> ["{\"x\" |-> 3}"]
+out |-> ["list(3)"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["{\"x\" |-> 3}"]
+
+> {seq(assign("x",-5),while(leq(ref("x"),10),seq(assign("x",plus(ref("x"),1)),print(ref("x")))))} ->* {done()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+env |-> ["{\"x\" |-> 11}"]
+out |-> ["list(-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11)"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["{\"x\" |-> 11}"]
+
+> {continue,signal_cnt = none} -> {done(),signal_cnt = cnt()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+_X1 |-> ["cnt"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["cnt"]
+store |-> ["map-empty"]
+
+> {listen_cnt(continue),signal_cnt = none} -> {done(),signal_cnt = none()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+_X1 |-> ["none"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {listen_cnt(listen_cnt(continue))} -> {listen_cnt(done())}
+RES |-> ["7"]
+_X0 |-> ["listen_cnt(done)"]
+_X1 |-> ["none"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {listen_cnt(listen_cnt(continue))} ->* {done()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+_X1 |-> ["none"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {seq(assign("x",-5),while(leq(ref("x"),10),seq(seq(assign("x",plus(ref("x"),1)),continue),print(ref("x")))))} ->* {done()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+_X1 |-> ["none"]
+env |-> ["{\"x\" |-> 11}"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["{\"x\" |-> 11}"]
+
+> {break,signal_brk = none} -> {done(),signal_brk = brk()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+_X1 |-> ["brk"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["brk"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {listen_brk(break),signal_brk = none} -> {done(),signal_brk = none()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+_X1 |-> ["none"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {listen_brk(continue),signal_cnt = none} -> {listen_brk(done()),signal_cnt = cnt()}
+RES |-> ["7"]
+_X0 |-> ["listen_brk(done)"]
+_X1 |-> ["cnt"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["cnt"]
+store |-> ["map-empty"]
+
+> {listen_brk(continue),signal_cnt = none} ->* {done(),signal_cnt = cnt()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+_X1 |-> ["cnt"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["cnt"]
+store |-> ["map-empty"]
+
+> {listen_brk(listen_brk(break))} -> {listen_brk(done())}
+RES |-> ["7"]
+_X0 |-> ["listen_brk(done)"]
+_X1 |-> ["cnt"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {listen_brk(listen_brk(break))} ->* {done()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+_X1 |-> ["cnt"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {listen_brk(listen_cnt(break)),signal_brk = none} ->* {done(),signal_brk = none()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+_X1 |-> ["none"]
+env |-> ["map-empty"]
+out |-> ["list()"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["map-empty"]
+
+> {seq(seq(assign("x",-5),while(leq(ref("x"),10),seq(seq(assign("x",plus(ref("x"),1)),break),print(ref("x"))))),print(ref("x")))} ->* {done()}
+RES |-> ["7"]
+_X0 |-> ["done"]
+_X1 |-> ["none"]
+env |-> ["{\"x\" |-> -4}"]
+out |-> ["list(-4)"]
+signal_brk |-> ["none"]
+signal_cnt |-> ["none"]
+store |-> ["{\"x\" |-> -4}"]
+

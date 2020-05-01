@@ -1,0 +1,86 @@
+relation(->,REPEATABLE)
+relation(=>,REPEATABLE)
+
+entity(store,_map-empty)
+entity(out,_nil)
+
+terminal(->,done)
+terminal(->,INTEGERS)
+terminal(->,BOOLEANS)
+terminal(=>,INTEGERS)
+terminal(=>,BOOLEANS)
+
+// integers, strings, booleans are builtin
+
+// queries:
+
+> plus(3,4)             =>* RES
+> plus(2,plus(3,4))     =>* 9
+> leq(3,3)              =>* ?
+> leq(plus(2,2),3)      =>* ?
+
+> print(plus(1,2)) ->* ?
+
+> done ->* done
+
+> print(plus(1,2)) ->* ? 
+
+> seq(assign("b", 1), assign("c",2)) ->* ?
+
+> seq(assign("x", plus(1,2))
+          ,print(ref("x"))) ->* ?
+
+> seq(assign("x",-5)
+     ,while(leq(ref("x"),10)
+           ,seq(assign("x", plus(ref("x"),1))
+               ,print(ref("x"))))) ->* ?
+
+C1, store = Sig1, out = Alp1 -> C1', store = Sig2, out = Alp2
+------
+seq(C1,C2), store = Sig1, out = Alp1 -> seq(C1',C2), store = Sig2, out = Alp2
+
+#
+------
+seq(done,C2), store = Sig, out = Alp1 -> C2, store = Sig, out = Alp1
+
+E, store = Sig1, out = Alp1  =>* V, store = Sig1, out = Alp2
+_map-insert(Sig1,R,V) |> Sig2
+------
+assign(R,E), store = Sig1, out = Alp1 -> done, store = Sig2, out = Alp2
+
+E, store = Sig, out = Alp1 =>* V, store = Sig, out = Alp2
+_list(V) |> Bet
+------
+print(E), store = Sig, out = Alp1 -> done, store = Sig, out = _list-append(Alp2,Bet)
+
+E, store = Sig, out = Alp1 =>* false<>, store = Sig, out = Alp2
+------
+while(E,C), store = Sig, out = Alp1 -> done, store = Sig, out = Alp2
+
+E, store = Sig, out = Alp1 =>* true<>, store = Sig, out = Alp2
+------
+while(E,C), store = Sig, out = Alp1 -> seq(C,while(E,C)), store = Sig, out = Alp2
+
+// expressions:
+
+E1, store = Sig, out = Alp1 =>* I1, store = Sig, out = Alp2
+E2, store = Sig, out = Alp2 =>* I2, store = Sig, out = Alp3
+_integer-add(I1,I2) |> I3
+------
+plus(E1,E2), store = Sig, out = Alp1 => I3, store = Sig, out = Alp3
+
+E1, store = Sig, out = Alp1 =>* I1, store = Sig, out = Alp2
+E2, store = Sig, out = Alp2 =>* I2, store = Sig, out = Alp3
+_is-less-or-equal(I1,I2) |> true<>
+------
+leq(E1,E2), store = Sig, out = Alp1 => true<>, store = Sig, out = Alp3
+
+E1, store = Sig, out = Alp1 =>* I1, store = Sig, out = Alp2
+E2, store = Sig, out = Alp2 =>* I2, store = Sig, out = Alp3
+_is-less-or-equal(I1,I2) |> false<>
+------
+leq(E1,E2), store = Sig, out = Alp1 => false<>, store = Sig, out = Alp3
+
+_map-lookup(Sig,R) |> V
+(9)------
+ref(R), store = Sig, out = Alp1 => V , store = Sig, out = Alp1

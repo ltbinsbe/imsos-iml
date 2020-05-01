@@ -1,0 +1,41 @@
+> plus(3,4) => ?
+? |-> 7
+fromList [("store",(Map (fromList []),RW))]
+
+> plus(2,plus(3,4)) => 9
+? |-> 9
+fromList [("store",(Map (fromList []),RW))]
+
+> leq(3,3) => ?
+? |-> true
+fromList [("store",(Map (fromList []),RW))]
+
+> leq(plus(2,2),3) => ?
+? |-> false
+fromList [("store",(Map (fromList []),RW))]
+
+> "x" => ?
+? |-> "x"
+fromList [("store",(Map (fromList []),RW))]
+
+> print(plus(1,2)) -> ?
+? |-> done
+fromList [("out",(List [Int 3],WO)),("store",(Map (fromList []),RW))]
+
+> print(plus(1,2)) ->> ?
+? |-> done
+fromList [("out",(List [Int 3],WO)),("store",(Map (fromList []),RW))]
+
+> seq(assign("b",1),assign("c",2)) ->> ?
+? |-> done
+fromList [("out",(List [],WO)),("store",(Map (fromList [(String "b",Int 1),(String "c",Int 2)]),RW))]
+
+> seq(assign("x",plus(1,2)),print("x")) ->> ?
+? |-> done
+fromList [("out",(List [Int 3],WO)),("store",(Map (fromList [(String "x",Int 3)]),RW))]
+
+> seq(assign("x",-5),while(leq("x",10),seq(assign("x",plus("x",1)),print("x")))) ->> ?
+? |-> done
+fromList [("out",(List [Int (-4),Int (-3),Int (-2),Int (-1),Int 0,Int 1,Int 2,Int 3,Int 4,Int 5,Int 6,Int 7,Int 8,Int 9,Int 10,Int 11],WO)),("store",(Map (fromList [(String "x",Int 11)]),RW))]
+
+

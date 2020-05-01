@@ -1,0 +1,13 @@
+==========================
+IML Compiler & Interpreter
+==========================
+
+=== Installation
+
+> requires: mlt, funcons-values
+
+cabal build
+
+=== Usage
+
+dist/build/runiml/runiml <.iml file> <back-end> <middle-end>

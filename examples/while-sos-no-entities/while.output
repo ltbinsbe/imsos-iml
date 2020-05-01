@@ -1,0 +1,19 @@
+> {plus(3,4),_map-empty} => {7} SUCCESS 1
+> {plus(2,plus(3,4)),_map-empty} => {9} SUCCESS 2
+> {leq(3,3),_map-empty} => {true} SUCCESS 3
+> {leq(plus(2,2),3),_map-empty} => {false} SUCCESS 4
+> {"x",_map-empty} => {_} FAILED
+> {print(plus(1,2)),_map-empty,_list} -> {done(),Sto,Out} SUCCESS 6
+["Out |-> [\"list(3)\"]","Sto |-> [\"map-empty\"]"]
+> {done,_map-empty,_list} ->* {done(),Sto,Out} SUCCESS 7
+["Out |-> [\"list()\"]","Sto |-> [\"map-empty\"]"]
+> {print(plus(1,2)),_map-empty,_list} ->* {done(),Sto,Out} SUCCESS 8
+["Out |-> [\"list(3)\"]","Sto |-> [\"map-empty\"]"]
+> {seq(print(1),print(2)),_map-empty,_list} ->* {done(),Sto,Out} SUCCESS 9
+["Out |-> [\"list(1,2)\"]","Sto |-> [\"map-empty\"]"]
+> {seq(assign("b",1),assign("c",2)),_map-empty,_list} ->* {done(),Sto,Out} SUCCESS 10
+["Out |-> [\"list()\"]","Sto |-> [\"{\\\"b\\\" |-> 1, \\\"c\\\" |-> 2}\"]"]
+> {seq(assign("x",plus(1,2)),print("x")),_map-empty,_list} ->* {done(),Sto,Out} SUCCESS 11
+["Out |-> [\"list(3)\"]","Sto |-> [\"{\\\"x\\\" |-> 3}\"]"]
+> {seq(assign("x",-5),while(leq("x",10),seq(assign("x",plus("x",1)),print("x")))),_map-empty,_list} ->* {done(),Sto,Out} SUCCESS 12
+["Out |-> [\"list(-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11)\"]","Sto |-> [\"{\\\"x\\\" |-> 11}\"]"]

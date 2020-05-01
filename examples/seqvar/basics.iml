@@ -1,0 +1,70 @@
+
+#
+------
+two(Xs) -> Xs
+  with seq-variable(Xs,2)
+
+#
+------
+two(Xs) -> false
+  with seq-variable(Xs,0,1)
+
+> two() -> false
+> two(1) -> false
+> two(1,2) -> 1,2
+> two(1,2,3) -> 1,2,3
+> two(1,2,3,4) -> 1,2,3,4
+
+#
+------
+middle(Xs,Ys,Zs) -> Ys
+  with seq-variable(Xs,SHORTEST)
+       seq-variable(Ys,1,3,LONGEST)
+       seq-variable(Zs,0,1)
+
+> middle(1) -> 1
+> middle(1,2) -> 1,2
+> middle(1,2,3) -> 1,2,3
+> middle(1,2,3,4) -> 1,2,3
+> middle(1,2,3,4,5) -> 2,3,4
+> middle(1,2,3,4,5,6) -> 3,4,5
+
+> middle(1) -> ONE
+> middle(1,2) -> ONE,TWO
+> middle(1,2,3,4,5) -> TWO,THREEFOUR
+    with seq-variable(THREEFOUR,2,2)
+> middle(1,2,3,4,5,6) -> THREEFOUR,5
+
+#
+------
+sum => 0
+
+sum(Xs) => PSum 
+------
+sum(X,Xs) => _integer_add(X,PSum)
+  with
+    seq-variable(Xs) 
+
+> sum() => 0
+> sum(1) => 1
+> sum(1,2) => 3
+> sum(1,2,3) => 6
+> sum(1,2,3,4) => 10
+
+#
+------
+# =sm=> 0
+
+Xs =sm=> PSum
+------
+X,Xs =sm=> _integer_add(X,PSum)
+  with  seq-variable(Xs)
+
+> # =sm=> 0
+> 1 =sm=> 1
+> 1,2 =sm=> 3
+> 1,2,3 =sm=> 6
+> 1,2,3,4 =sm=> 10
+
+
+

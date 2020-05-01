@@ -1,0 +1,76 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathpartir}
+\usepackage[margin=1cm]{geometry}
+\begin{document}
+\begin{gather}
+\textbf{relation}(\rightarrow)
+\end{gather}
+\begin{gather}
+\textbf{relation}(\twoheadrightarrow)
+\end{gather}
+\begin{gather}
+\textbf{relation}(\Rightarrow)
+\end{gather}
+\begin{gather}
+\textbf{entity}(\textsf{store},\texttt{map-empty})
+\end{gather}
+\begin{gather}
+\textbf{entity}(\textsf{out},\texttt{nil})
+\end{gather}
+\begin{gather}
+\textbf{terminal}(\rightarrow,\mathit{done})
+\end{gather}
+\begin{gather}
+\textbf{terminal}(\rightarrow,integers)
+\end{gather}
+\begin{gather}
+\textbf{terminal}(\rightarrow,booleans)
+\end{gather}
+\begin{gather}
+\textbf{terminal}(\Rightarrow,integers)
+\end{gather}
+\begin{gather}
+\textbf{terminal}(\Rightarrow,booleans)
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ C_1 , \textsf{store} = \sigma_1,\textsf{out} = \alpha_1 \} \rightarrow \{ C_1' , \textsf{store} = \sigma_2,\textsf{out} = \alpha_2 \}}{\{ \mathit{seq}(C_1,C_2) , \textsf{store} = \sigma_1,\textsf{out} = \alpha_1 \} \rightarrow \{ \mathit{seq}(C_1',C_2) , \textsf{store} = \sigma_2,\textsf{out} = \alpha_2 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{}{\{ \mathit{seq}(\mathit{done},C_2) , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \rightarrow \{ C_2 , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ \mathit{E} , \textsf{store} = \sigma_1,\textsf{out} = \alpha_1 \} \Rightarrow \{ \mathit{V} , \textsf{store} = \sigma_1,\textsf{out} = \alpha_2 \} \\ \texttt{map-insert}(\sigma_1 , \mathit{R} , \mathit{V}) \triangleright \sigma_2}{\{ \mathit{assign}(\mathit{R},\mathit{E}) , \textsf{store} = \sigma_1,\textsf{out} = \alpha_1 \} \rightarrow \{ \mathit{done} , \textsf{store} = \sigma_2,\textsf{out} = \alpha_2 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ \mathit{E} , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \Rightarrow \{ \mathit{V} , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \} \\ \texttt{list}(\mathit{V}) \triangleright \beta}{\{ \mathit{print}(\mathit{E}) , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \rightarrow \{ \mathit{done} , \textsf{store} = \sigma,\textsf{out} = \texttt{list-append}(\alpha_2 , \beta) \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ \mathit{E} , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \Rightarrow \{ \mathit{false} , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \}}{\{ \mathit{while}(\mathit{E},\mathit{C}) , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \rightarrow \{ \mathit{done} , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ \mathit{E} , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \Rightarrow \{ \mathit{true} , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \}}{\{ \mathit{while}(\mathit{E},\mathit{C}) , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \rightarrow \{ \mathit{seq}(\mathit{C},\mathit{while}(\mathit{E},\mathit{C})) , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ \mathit{C} , \textsf{store} = \sigma_1,\textsf{out} = \alpha_1 \} \rightarrow \{ C_2 , \textsf{store} = \sigma_2,\textsf{out} = \alpha_2 \} \\ \{ C_2 , \textsf{store} = \sigma_2,\textsf{out} = \alpha_2 \} \twoheadrightarrow \{ \mathit{V} , \textsf{store} = \sigma_3,\textsf{out} = \alpha_3 \}}{\{ \mathit{C} , \textsf{store} = \sigma_1,\textsf{out} = \alpha_1 \} \twoheadrightarrow \{ \mathit{V} , \textsf{store} = \sigma_3,\textsf{out} = \alpha_3 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:9]{\textbf{is-terminating}_{\rightarrow}(\mathit{V})}{\{ \mathit{V} , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \twoheadrightarrow \{ \mathit{V} , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ E_1 , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \Rightarrow \{ I_1 , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \} \\ \{ E_2 , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \} \Rightarrow \{ I_2 , \textsf{store} = \sigma,\textsf{out} = \alpha_3 \} \\ \texttt{integer-add}(I_1 , I_2) \triangleright I_3}{\{ \mathit{plus}(E_1,E_2) , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \Rightarrow \{ I_3 , \textsf{store} = \sigma,\textsf{out} = \alpha_3 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ E_1 , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \Rightarrow \{ I_1 , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \} \\ \{ E_2 , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \} \Rightarrow \{ I_2 , \textsf{store} = \sigma,\textsf{out} = \alpha_3 \} \\ \texttt{is-less-or-equal}(I_1 , I_2) \triangleright \mathit{true}}{\{ \mathit{leq}(E_1,E_2) , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \Rightarrow \{ \mathit{true} , \textsf{store} = \sigma,\textsf{out} = \alpha_3 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ E_1 , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \Rightarrow \{ I_1 , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \} \\ \{ E_2 , \textsf{store} = \sigma,\textsf{out} = \alpha_2 \} \Rightarrow \{ I_2 , \textsf{store} = \sigma,\textsf{out} = \alpha_3 \} \\ \texttt{is-less-or-equal}(I_1 , I_2) \triangleright \mathit{false}}{\{ \mathit{leq}(E_1,E_2) , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \Rightarrow \{ \mathit{false} , \textsf{store} = \sigma,\textsf{out} = \alpha_3 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:9]{\texttt{map-lookup}(\mathit{R} , \sigma) \triangleright \mathit{V}}{\{ \mathit{R} , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \} \Rightarrow \{ \mathit{V} , \textsf{store} = \sigma,\textsf{out} = \alpha_1 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:1]{\textbf{is-terminating}_{\Rightarrow}(\underline{X_0})}{\{\underline{X_0}\} \Rightarrow \{\underline{X_0}\}}
+\end{gather}
+\end{document}

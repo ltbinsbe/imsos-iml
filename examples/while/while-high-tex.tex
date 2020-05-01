@@ -1,0 +1,115 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathpartir}
+\usepackage[margin=1cm]{geometry}
+\begin{document}
+\begin{gather}
+\textbf{relation}(\rightarrow)
+\end{gather}
+\begin{gather}
+\textbf{relation}(\Rightarrow)
+\end{gather}
+\begin{gather}
+\textbf{entity}(\textsf{env},\texttt{map\_empty})
+\end{gather}
+\begin{gather}
+\textbf{entity}(\textsf{store},\texttt{map\_empty})
+\end{gather}
+\begin{gather}
+\textbf{entity}(\textsf{out},\texttt{nil})
+\end{gather}
+\begin{gather}
+\textbf{terminal}(\rightarrow,\mathit{done})
+\end{gather}
+\begin{gather}
+\textbf{terminal}(\rightarrow,INTEGERS)
+\end{gather}
+\begin{gather}
+\textbf{terminal}(\rightarrow,BOOLEANS)
+\end{gather}
+\begin{gather}
+\textbf{terminal}(\Rightarrow,INTEGERS)
+\end{gather}
+\begin{gather}
+\textbf{terminal}(\Rightarrow,BOOLEANS)
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{C_1\} \rightarrow \{C_1'\}}{\{\mathit{seq}(C_1,C_2)\} \rightarrow \{\mathit{seq}(C_1',C_2)\}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{}{\{\mathit{seq}(\mathit{done},C_2)\} \rightarrow \{C_2\}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ \mathit{E} , \textsf{env} = \sigma_1 \} \Rightarrow^* \{ \mathit{V} , \textsf{env} = \_ \} \\ \texttt{map\_insert}(\sigma_1 , \mathit{R} , \mathit{V}) \triangleright \sigma_2}{\{ \mathit{assign}(\mathit{R},\mathit{E}) , \textsf{store} = \sigma_1 \} \rightarrow \{ \mathit{done} , \textsf{store} = \sigma_2 \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ \mathit{E} , \textsf{env} = \sigma \} \Rightarrow^* \{ \mathit{V} , \textsf{env} = \_ \}}{\{ \mathit{print}(\mathit{E}) , \textsf{store} = \sigma,\textsf{out} = L_1 \} \rightarrow \{ \mathit{done} , \textsf{store} = \sigma,\textsf{out} = \texttt{list\_append}(L_1 , \texttt{list}(\mathit{V})) \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ \mathit{E} , \textsf{env} = \sigma \} \Rightarrow^* \{ \mathit{false} , \textsf{env} = \_ \}}{\{ \mathit{while}(\mathit{E},\mathit{C}) , \textsf{store} = \sigma \} \rightarrow \{ \mathit{done} , \textsf{store} = \sigma \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ \mathit{E} , \textsf{env} = \sigma \} \Rightarrow^* \{ \mathit{true} , \textsf{env} = \_ \}}{\{ \mathit{while}(\mathit{E},\mathit{C}) , \textsf{store} = \sigma \} \rightarrow \{ \mathit{seq}(\mathit{C},\mathit{while}(\mathit{E},\mathit{C})) , \textsf{store} = \sigma \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{E_1\} \Rightarrow^* \{I_1\} \\ \{E_2\} \Rightarrow^* \{I_2\} \\ \texttt{integer\_add}(I_1 , I_2) \triangleright I_3}{\{\mathit{plus}(E_1,E_2)\} \Rightarrow \{I_3\}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{E_1\} \Rightarrow^* \{I_1\} \\ \{E_2\} \Rightarrow^* \{I_2\} \\ \texttt{is\_less\_or\_equal}(I_1 , I_2) \triangleright \mathit{true}}{\{\mathit{leq}(E_1,E_2)\} \Rightarrow \{\mathit{true}\}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{E_1\} \Rightarrow^* \{I_1\} \\ \{E_2\} \Rightarrow^* \{I_2\} \\ \texttt{is\_less\_or\_equal}(I_1 , I_2) \triangleright \mathit{false}}{\{\mathit{leq}(E_1,E_2)\} \Rightarrow \{\mathit{false}\}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\texttt{map\_lookup}(\mathit{R} , \sigma) \triangleright \mathit{V}}{\{ \mathit{ref}(\mathit{R}) , \textsf{env} = \sigma \} \Rightarrow \{ \mathit{V} , \textsf{env} = \sigma \}}
+\end{gather}
+\begin{gather}
+\textbf{entity}(\textsf{signal\_cnt},\mathit{none})
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:11]{\{ \mathit{E} , \textsf{env} = \sigma \} \Rightarrow^* \{ \mathit{true} , \textsf{env} = \_ \}}{\{ \mathit{while}(\mathit{E},\mathit{C}) , \textsf{store} = \sigma \} \rightarrow \{ \mathit{seq}(\mathit{listen\_cnt}(\mathit{C}),\mathit{while}(\mathit{E},\mathit{C})) , \textsf{store} = \sigma \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{}{\{ \mathit{continue} , \textsf{signal\_cnt} = \mathit{none} \} \rightarrow \{ \mathit{done} , \textsf{signal\_cnt} = \mathit{cnt} \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ C_1 , \textsf{signal\_cnt} = \mathit{none} \} \rightarrow \{ C_1' , \textsf{signal\_cnt} = \mathit{none} \}}{\{ \mathit{listen\_cnt}(C_1) , \textsf{signal\_cnt} = \mathit{none} \} \rightarrow \{ \mathit{listen\_cnt}(C_1') , \textsf{signal\_cnt} = \mathit{none} \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{}{\{\mathit{listen\_cnt}(\mathit{done})\} \rightarrow \{\mathit{done}\}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ C_1 , \textsf{signal\_cnt} = \mathit{none} \} \rightarrow \{ C_1 , \textsf{signal\_cnt} = \mathit{cnt} \}}{\{ \mathit{listen\_cnt}(C_1) , \textsf{signal\_cnt} = \mathit{none} \} \rightarrow \{ \mathit{done} , \textsf{signal\_cnt} = \mathit{none} \}}
+\end{gather}
+\begin{gather}
+\textbf{entity}(\textsf{signal\_brk},\mathit{none})
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:12]{\{ \mathit{E} , \textsf{env} = \sigma \} \Rightarrow^* \{ \mathit{true} , \textsf{env} = \_ \}}{\{ \mathit{while}(\mathit{E},\mathit{C}) , \textsf{store} = \sigma \} \rightarrow \{ \mathit{listen\_brk}(\mathit{seq}(\mathit{listen\_cnt}(\mathit{C}),\mathit{while}(\mathit{E},\mathit{C}))) , \textsf{store} = \sigma \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{}{\{ \mathit{break} , \textsf{signal\_brk} = \mathit{none} \} \rightarrow \{ \mathit{done} , \textsf{signal\_brk} = \mathit{brk} \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ C_1 , \textsf{signal\_brk} = \mathit{none} \} \rightarrow \{ C_1' , \textsf{signal\_brk} = \mathit{none} \}}{\{ \mathit{listen\_brk}(C_1) , \textsf{signal\_brk} = \mathit{none} \} \rightarrow \{ \mathit{listen\_brk}(C_1') , \textsf{signal\_brk} = \mathit{none} \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{}{\{\mathit{listen\_brk}(\mathit{done})\} \rightarrow \{\mathit{done}\}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:10]{\{ C_1 , \textsf{signal\_brk} = \mathit{none} \} \rightarrow \{ C_1 , \textsf{signal\_brk} = \mathit{brk} \}}{\{ \mathit{listen\_brk}(C_1) , \textsf{signal\_brk} = \mathit{none} \} \rightarrow \{ \mathit{done} , \textsf{signal\_brk} = \mathit{none} \}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:1]{\textbf{is-terminal}_{\rightarrow}(\underline{X_0})}{\{\underline{X_0}\} \rightarrow^* \{\underline{X_0}\}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:2]{\{\underline{X_1}\} \rightarrow \{\underline{X_2}\} \\ \{\underline{X_2}\} \rightarrow^* \{\underline{X_3}\}}{\{\underline{X_1}\} \rightarrow^* \{\underline{X_3}\}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:1]{\textbf{is-terminal}_{\Rightarrow}(\underline{X_4})}{\{\underline{X_4}\} \Rightarrow^* \{\underline{X_4}\}}
+\end{gather}
+\begin{gather}
+\inferrule*[right = \scriptsize prio:2]{\{\underline{X_5}\} \Rightarrow \{\underline{X_6}\} \\ \{\underline{X_6}\} \Rightarrow^* \{\underline{X_7}\}}{\{\underline{X_5}\} \Rightarrow^* \{\underline{X_7}\}}
+\end{gather}
+\end{document}

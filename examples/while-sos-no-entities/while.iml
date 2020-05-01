@@ -1,0 +1,109 @@
+relation(->) // small-step for commands
+
+is-terminal(->, V)
+(1)------
+V, Sig1, Alp1 ->* V, Sig1, Alp1
+
+Pr1, Sig1, Alp1 -> Pr2, Sig2, Alp2
+Pr2, Sig2, Alp2 ->* V, Sig3, Alp3
+(2)------
+Pr1, Sig1, Alp1 ->* V, Sig3, Alp3
+
+relation(=>) // big-step for expressions
+
+is-terminal(=>, V)
+(1)------
+V, Env =>* V
+
+X, Env => V
+(2)------
+X, Env =>* V
+
+entity(store,_map-empty)
+entity(out,_nil)
+
+terminal(->,done)
+terminal(=>,INTEGERS)
+terminal(=>,BOOLEANS)
+
+// integers, strings, booleans are builtin
+
+// queries:
+
+> plus(3,4), _map-empty         => 7
+> plus(2,plus(3,4)), _map-empty => 9
+> leq(3,3), _map-empty          => true<>
+> leq(plus(2,2),3), _map-empty  => false<>
+
+> print(plus(1,2)), _map-empty, _list -> done, Sto, Out
+
+> RESET-BINDINGS
+> done, _map-empty, _list ->* done, Sto, Out
+
+> RESET-BINDINGS
+> print(plus(1,2)), _map-empty, _list ->* done, Sto, Out
+
+> RESET-BINDINGS
+> seq(print(1),print(2)), _map-empty, _list ->* done, Sto, Out
+
+> RESET-BINDINGS
+> seq(assign("b", 1), assign("c",2)), _map-empty, _list ->* done, Sto, Out
+
+> RESET-BINDINGS
+> seq(assign("x", plus(1,2))
+          ,print("x")), _map-empty, _list ->* done, Sto, Out
+
+> RESET-BINDINGS
+> seq(assign("x",-5)
+     ,while(leq("x",10)
+           ,seq(assign("x", plus("x",1))
+               ,print("x")))), _map-empty, _list ->* done, Sto, Out
+
+C1, Sig1, Alp1 -> C1', Sig2, Alp2
+------
+seq(C1,C2), Sig1, Alp1 -> seq(C1',C2), Sig2, Alp2
+
+#
+------
+seq(done,C2), Sig, Alp1 -> C2, Sig, Alp1
+
+E, Sig1  =>* V
+_map-insert(Sig1,R,V) |> Sig2
+------
+assign(R,E), Sig1, Alp -> done, Sig2, Alp
+
+E, Sig =>* V
+------
+print(E), Sig, Alp1 -> done, Sig, _list-append(Alp1,_list(V))
+
+E, Sig =>* false<>
+------
+while(E,C), Sig, Alp -> done, Sig, Alp
+
+E, Sig =>* true<>
+------
+while(E,C), Sig, Alp -> seq(C,while(E,C)), Sig, Alp
+
+// expressions:
+
+E1, Env =>* I1
+E2, Env =>* I2
+_integer-add(I1,I2) |> I3
+------
+plus(E1,E2), Env => I3
+
+E1, Env =>* I1
+E2, Env =>* I2
+_is-less-or-equal(I1,I2) |> true<>
+------
+leq(E1,E2), Env => true<>
+
+E1, Env =>* I1
+E2, Env =>* I2
+_is-less-or-equal(I1,I2) |> false<>
+------
+leq(E1,E2), Env => false<>
+
+_map-lookup(Env,R) |> V
+(9)------
+R, Env => V

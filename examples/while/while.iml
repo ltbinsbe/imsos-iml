@@ -1,0 +1,163 @@
+relation(->,REPEATABLE)
+relation(=>,REPEATABLE)
+
+entity(env,_map-empty)
+entity(store,_map-empty)
+entity(out,_nil)
+
+terminal(->,done)
+terminal(->,INTEGERS)
+terminal(->,BOOLEANS)
+terminal(=>,INTEGERS)
+terminal(=>,BOOLEANS)
+
+// integers, strings, booleans are builtin
+
+// queries:
+
+> plus(3,4)             => RES
+> plus(2,plus(3,4))     => 9
+> leq(3,3)              => ?
+> leq(plus(2,2),3)      => ?
+
+> seq(assign("x", plus(1,2))
+     ,print(ref("x"))) ->* done
+
+> seq(assign("x",-5)
+     ,while(leq(ref("x"),10)
+           ,seq(assign("x", plus(ref("x"),1))
+               ,print(ref("x"))))) ->* done
+
+
+C1 -> C1'
+------
+seq(C1,C2) -> seq(C1',C2)
+
+#
+------
+seq(done,C2) -> C2
+
+env = Sig1 |- E =>* V
+_map-insert(Sig1,R,V) |> Sig2
+------
+assign(R,E), store = Sig1 -> done, store = Sig2
+
+env = Sig |- E =>* V
+------
+print(E), store = Sig, out = L1 -> done, store = Sig, out = _list-append(L1,_list(V)) 
+
+env = Sig |- E =>* false<>
+------
+while(E,C), store = Sig -> done, store = Sig
+
+env = Sig |- E =>* true<>
+------
+while(E,C), store = Sig -> seq(C,while(E,C)), store = Sig
+
+// expressions:
+
+E1 =>* I1
+E2 =>* I2
+_integer-add(I1,I2) |> I3
+------
+plus(E1,E2) => I3
+
+E1 =>* I1
+E2 =>* I2
+_is-less-or-equal(I1,I2)
+------
+leq(E1,E2) => true<>
+
+E1 =>* I1
+E2 =>* I2
+_is-less-or-equal(I1,I2) |> false<>
+------
+leq(E1,E2) => false<>
+
+_map-lookup(Sig,R) |> V
+------
+env = Sig |- ref(R) => V
+
+// modular extension of continue
+// uses signal-constructors: none, cnt
+// which will never appear as a program term
+// it is therefore irrelevant whether they are terminal constructors
+
+entity(signal_cnt, none)
+
+// this rule replaces a previous rule
+// efficiency may be negatively impacted by retaining both copies
+// (and giving the later rule a higher priority)
+env = Sig |- E =>* true<>
+(11)------
+while(E,C), store = Sig -> seq(listen_cnt(C),while(E,C)), store = Sig
+
+#
+------
+continue, signal_cnt = none -> done, signal_cnt = cnt
+
+C1, signal_cnt = none  -> C1', signal_cnt = none 
+------
+listen_cnt(C1), signal_cnt = none -> listen_cnt(C1'), signal_cnt = none
+
+#
+------
+listen_cnt(done) -> done
+
+C1, signal_cnt = none -> C1', signal_cnt = cnt
+------
+listen_cnt(C1), signal_cnt = none -> done, signal_cnt = none
+
+> continue, signal_cnt = none  -> done, signal_cnt = cnt 
+> listen_cnt(continue), signal_cnt = none  -> done, signal_cnt = none 
+> listen_cnt(listen_cnt(continue)) -> listen_cnt(done)
+> listen_cnt(listen_cnt(continue)) ->* done
+
+> seq(assign("x",-5)
+     ,while(leq(ref("x"),10)
+           ,seq(seq(assign("x", plus(ref("x"),1)), continue)
+               ,print(ref("x"))))) ->* done
+
+// modular extension with break
+// uses signal-constructors none/brk
+
+// without a separate signal type for break, we would need to add a 
+// new rule for listen_cnt in a nonmodular fashion (to propagate the break signal)
+entity(signal_brk, none)
+
+// RULE below is inefficient, listen_brk wrapper for each iteration (but only needed once)
+// env = Sig |- E =>* true<>
+// (12)------
+// while(E,C), store = Sig -> listen_brk(seq(listen_cnt(C),while(E,C))), store = Sig
+
+#
+------
+break, signal_brk = none -> done, signal_brk = brk
+
+C1, signal_brk = none -> C1', signal_brk = none
+------
+listen_brk(C1), signal_brk = none -> listen_brk(C1'), signal_brk = none
+
+#
+------
+listen_brk(done) -> done
+
+C1, signal_brk = none -> C1', signal_brk = brk
+------
+listen_brk(C1), signal_brk = none -> done, signal_brk = none
+
+> break, signal_brk = none -> done, signal_brk = brk 
+> listen_brk(break), signal_brk = none -> done, signal_brk = none 
+> listen_brk(continue), signal_cnt = none -> listen_brk(done), signal_cnt = cnt 
+// the following holds because there is no termination condition on `cnt` signals
+> listen_brk(continue), signal_cnt = none ->* done, signal_cnt = cnt
+> listen_brk(listen_brk(break)) -> listen_brk(done)
+> listen_brk(listen_brk(break)) ->* done
+> listen_brk(listen_cnt(break)), signal_brk = none ->* done, signal_brk = none
+
+> seq(seq(assign("x",-5)
+         ,listen_brk(while(leq(ref("x"),10)
+           ,seq(seq(assign("x", plus(ref("x"),1)), break)
+               ,print(ref("x"))))))
+     ,print(ref("x"))) ->* done
+
