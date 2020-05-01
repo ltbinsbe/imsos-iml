@@ -13,6 +13,8 @@ import IML.Grammar.Programs
 import IML.Trans.ProMan
 import IML.Trans.RemoveRO
 import IML.Trans.RelFlags
+import IML.Trans.UniChain (chain)
+import IML.Trans.ToLower
 
 import Funcons.Operations (Values(..),ComputationTypes(..),Types(..),ppValues, HasValues(..), isString_, unString, upcastCharacter)
 
@@ -69,7 +71,7 @@ print_rascal_module options mod' = putStrLn $ render $ gModule mod
 
 program2rascal_module :: Component MixedProgram Module
 program2rascal_module = 
-  rules_from_flags >>> remove_read_only >>> component_ gProgram
+  rules_from_flags >>> remove_read_only >>> tolower >>> chain >>> component_ gProgram
 
 gProgram :: MixedProgram -> Module
 gProgram pr@(Program (Spec decls) _) = Module {

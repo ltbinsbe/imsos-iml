@@ -4,6 +4,7 @@
 module IML.Trans.UniChain where
 
 import IML.Grammar
+import IML.Grammar.Programs
 import IML.Trans.Bindings
 import IML.Trans.ToGraph
 import IML.Trans.FromGraph
@@ -12,7 +13,7 @@ import IML.Trans.ProMan
 
 import Control.Arrow
 
-chain :: Component Program Program
+chain :: Component LowProgram LowProgram
 chain = check_bindings >>> uniquify_bindings >>> graphify >>> 
             sequentialise >>> remove_rebindings >>> graphify >>> 
-            unify_bindings >>> remove_common_rewrites
+            unify_bindings
