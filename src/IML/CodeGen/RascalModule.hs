@@ -146,7 +146,7 @@ gSideCon sc cont = case sc of
 
 gPattern :: Pattern -> Doc
 gPattern p = case p of
-  PCons f ps  -> text f <> gTuple (map gPattern ps) 
+  PCons f ps  -> text (repHyphen f) <> gTuple (map gPattern ps) 
   PVar x      -> tvar x
   PVal v      -> ppLit gPattern v 
   PAny        -> text "_"
@@ -157,13 +157,13 @@ gExpr e = case e of
   VOP op es -> gOP op <> parens (hsep $ intersperse comma $ map gExpr es)
 
 gOP :: VOP -> Doc
-gOP op = text op
+gOP op = text (repHyphen op)
 
 gTerm :: Term -> Doc
 gTerm t = case t of
   TVar x -> tvar x
   TVal v -> ppLit gTerm v
-  TCons nm ts -> text nm <> gTuple (map gTerm ts) 
+  TCons nm ts -> text (repHyphen nm) <> gTuple (map gTerm ts) 
 
 ppLit :: HasValues t => (t -> Doc) -> Values t -> Doc
 ppLit gterm v = case v of 
